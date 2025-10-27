@@ -1,0 +1,19 @@
+{% extends 'checkbook_base.html' %}
+{% block title %}Delete Transaction{% endblock %}
+{% block content %}
+            <div id="delete-transaction-form">
+                <form method="POST"> 
+                    <br>
+                    {% csrf_token %}
+                    <p>Are you sure you want to delete the transaction on {{ transaction.date }} for {{ transaction.amount }} ({{ transaction.type }})?</p>
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                     
+                    {# Cancel: go back to the account's transactions (BalanceSheet) #}
+                    {% if transaction.account and transaction.account.pk %}
+                        <a class="btn btn-secondary" href="{% url 'balance' transaction.account.pk %}">Cancel</a>
+                    {% else %}
+                        <a class="btn btn-secondary" href="{% url 'account_list' %}">Cancel</a>
+                    {% endif %}
+                </form>
+            </div>
+{% endblock content %}

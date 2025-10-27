@@ -1,0 +1,14 @@
+{% extends 'checkbook_base.html' %}
+{% block title %}Update Account{% endblock %}
+{% block content %}
+<h2>Update Account</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-danger">Update</button>
+</form>
+<div class="update_buttons">
+    
+    <a class="btn btn-secondary" href="{% url 'index' %}">Cancel</a>
+    </div>
+{% endblock %}
