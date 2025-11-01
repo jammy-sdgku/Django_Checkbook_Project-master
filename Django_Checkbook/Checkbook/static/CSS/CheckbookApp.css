@@ -32,14 +32,14 @@ h1 {
 
 /* General Form Field Styling */
 label {
-	width: 125px;
+	width: 135px;
 	margin-left: 50px;
 	font-weight: bold;
 	opacity: initial;
 }
 
 #index-label {
-	margin-left: -75px;
+	margin-left: auto;
 	margin-bottom: 15px;
 }
 
@@ -192,6 +192,10 @@ tr td {
 	justify-content: center;
 }
 
+#btn_account {
+	margin-top: 15px;
+}
+
 .update_buttons .btn,
 .update_buttons button,
 .update_buttons a.btn {
@@ -244,6 +248,10 @@ button a:hover {
 #footer-left {
 	width: 40%;
 	text-align: right;
+}
+
+#footer-right {
+	text-align: left;
 }
 
 #block-footer {
