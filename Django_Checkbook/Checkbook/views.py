@@ -3,16 +3,17 @@ from .models import Account, Transaction
 from .forms import AccountForm, TransactionForm
 from decimal import Decimal, InvalidOperation
 import logging
+from django.core.paginator import Paginator
 
 def home(request):
     form = TransactionForm(data=request.POST or None)
     if request.method == 'POST':
         pk = request.POST['account']
-        # Route to different balance sheets based on account ID
+        # Redirect instead of calling the view directly
         if pk == '17':
-            return balance2(request, pk)
+            return redirect('balance2', pk=pk)
         else:
-            return balance(request, pk)
+            return redirect('balance', pk=pk)
     content = {'form': form}
     return render(request, 'checkbook/index.html', content)
 
@@ -29,100 +30,128 @@ def create_account(request):
 
 def balance(request, pk):
     account = get_object_or_404(Account, pk=pk)
+    
+    # Get all transactions ordered by date (oldest first for correct balance calculation)
+    all_transactions = list(Transaction.Transactions.filter(account=pk).select_related('account').order_by('date'))
+    
+    # Calculate running balance for ALL transactions
     current_total = account.initial_deposit
-    table_contents = {}
+    transactions_with_balance = []
     
-    # Get transaction IDs first, then fetch each transaction individually
-    transaction_ids = Transaction.Transactions.filter(account=pk).order_by('-date').values_list('id', flat=True)
-    
-    for transaction_id in transaction_ids:
+    for t in all_transactions:
         try:
-            t = Transaction.Transactions.select_related().get(id=transaction_id)
             amount = t.amount
             
             if t.type == 'Deposit':
                 current_total += amount
-                table_contents.update({t: current_total})
             else:
                 current_total -= amount
-                table_contents.update({t: current_total})
-        except (ValueError, TypeError, InvalidOperation, Transaction.DoesNotExist) as e:
-            logging.error(f"Error processing transaction {transaction_id}: {str(e)}")
+            
+            transactions_with_balance.append((t, current_total))
+                
+        except (ValueError, TypeError, InvalidOperation) as e:
+            logging.error(f"Error processing transaction {t.id}: {str(e)}")
             continue
     
-    content = {'account': account, 'table_contents': table_contents, 'balance': current_total}
+    # Reverse to show newest first
+    transactions_with_balance.reverse()
+    
+    # Pagination on the pre-calculated list
+    paginator = Paginator(transactions_with_balance, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Convert page items to dictionary for template
+    table_contents = {transaction: balance for transaction, balance in page_obj}
+    
+    content = {
+        'account': account,
+        'table_contents': table_contents,
+        'balance': current_total,
+        'page_obj': page_obj
+    }
     return render(request, 'checkbook/BalanceSheet.html', content)
 
 def balance2(request, pk):
     account = get_object_or_404(Account, pk=pk)
+    
+    # Get all transactions ordered by date (oldest first for correct balance calculation)
+    all_transactions = list(Transaction.Transactions.filter(account=pk).select_related('account').order_by('date'))
+    
+    # Calculate running balance for ALL transactions
     current_total = account.initial_deposit
-    table_contents = {}
+    transactions_with_balance = []
     
-    # Get transaction IDs first, then fetch each transaction individually
-    transaction_ids = Transaction.Transactions.filter(account=pk).order_by('-date').values_list('id', flat=True)
-    
-    for transaction_id in transaction_ids:
+    for t in all_transactions:
         try:
-            t = Transaction.Transactions.get(id=transaction_id)
             amount = t.amount
             
             if t.type == 'Deposit':
                 current_total += amount
-                table_contents.update({t: current_total})
             else:
                 current_total -= amount
-                table_contents.update({t: current_total})
-        except (ValueError, TypeError, InvalidOperation, Transaction.DoesNotExist) as e:
-            logging.error(f"Error processing transaction {transaction_id}: {str(e)}")
+            
+            transactions_with_balance.append((t, current_total))
+                
+        except (ValueError, TypeError, InvalidOperation) as e:
+            logging.error(f"Error processing transaction {t.id}: {str(e)}")
             continue
     
-    content = {'account': account, 'table_contents': table_contents, 'balance': current_total}
+    # Reverse to show newest first
+    transactions_with_balance.reverse()
+    
+    # Pagination on the pre-calculated list
+    paginator = Paginator(transactions_with_balance, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Convert page items to dictionary for template
+    table_contents = {transaction: balance for transaction, balance in page_obj}
+    
+    content = {
+        'account': account,
+        'table_contents': table_contents,
+        'balance': current_total,
+        'page_obj': page_obj
+    }
     return render(request, 'checkbook/BalanceSheet2.html', content)
 
 def transaction(request):
     form = TransactionForm(data=request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            
             transaction = form.save()
             print(f"Saved transaction date: {transaction.date}")
             pk = request.POST['account']
-            return balance(request, pk)
+            return redirect('balance', pk=pk)
         else:
-            # Debug: Show form errors
             print(f"Form errors: {form.errors}")
     content = {'form': form}
     return render(request, 'checkbook/AddTransaction.html', content)
 
-#make updete and delete views here
-
 def update_transaction(request, pk):
-    transaction = get_object_or_404(Transaction, pk=pk) 
+    transaction = get_object_or_404(Transaction.Transactions.select_related('account'), pk=pk) 
     form = TransactionForm(data=request.POST or None, instance=transaction)
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-           # Redirect back to the balance sheet for this account
             return redirect('balance', pk=transaction.account.pk)
     else:
         form = TransactionForm(instance=transaction)
-         # Debug: Print form data
         print(f"Form date field value: {form['date'].value()}")
         print(f"Form initial data: {form.initial}")
     content = {'form': form}
     return render(request, 'checkbook/UpdateTransaction.html', content) 
 
 def delete_transaction(request, pk):
-    transaction = get_object_or_404(Transaction, pk=pk)
+    transaction = get_object_or_404(Transaction.Transactions.select_related('account'), pk=pk)
     if request.method == 'POST':
         pk_account = transaction.account.pk
         transaction.delete()
-        return balance(request, pk_account)
-    # Render confirmation on GET
+        return redirect('balance', pk=pk_account)
     content = {'transaction': transaction}
     return render(request, 'checkbook/deleteTransaction.html', content)
 
-#update and delete account views
 def update_account(request, pk):
     account = get_object_or_404(Account, pk=pk)
     form = AccountForm(data=request.POST or None, instance=account)

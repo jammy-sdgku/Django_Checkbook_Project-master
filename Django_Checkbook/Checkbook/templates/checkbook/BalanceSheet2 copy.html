@@ -1,0 +1,59 @@
+{% extends 'checkbook_base.html' %}
+{% block title %}Balance Sheet{% endblock %}
+{% block content %}
+			<div id="all-transactions-form">
+				<form> 
+					<br>
+					<!-- Use value to add the Django populated details-->
+					<label>Account:</label>
+					<input id="accountholder" type="text" name="accountHolder" value="{{ account }}" readonly>
+					<br><br>
+					<label>Current Balance:</label>
+					<input id="balance" type="text" name="currentBalance" value="€{{ balance }}" readonly>
+				</form>
+			</div>
+			<br>
+			<div id="button-container" class="text-center">
+				<button type="button" class="btn btn-primary"><a href="{% url 'transaction' %}">Add Transaction</a></button>
+				<button type="button" class="btn btn-warning"><a href="{% url 'updateAccount' account.pk %}">Update Account</a></button>
+				<button type="button" class="btn btn-danger"><a href="{% url 'deleteAccount' account.pk %}">Delete Account</a></button>
+			</div>
+			<br><br>
+			<h2>RECENT TRANSACTIONS</h2>
+
+			<table class="table table-responsive" id ="transactions-table"> 
+				<!-- Replace this with the Django populated transactions -->
+				<tr id="headerRow">
+					<th>Date</th>
+					<th>Type</th>
+					<th>To/From</th>
+					<th>Description</th>
+					<th>Cleared</th>
+					<th>Amount</th>
+					<th>Balance</th>
+					<th>Actions</th> 
+				</tr>
+			
+				{% for key, total in table_contents.items %}
+				<tr>
+						<td class="center">{{ key.date }}</td>
+						<td class="center">{{ key.type }}</td>
+						<td class="center">{{ key.to_from }}</td>
+						<td class="left">{{ key.description }}</td>
+						<td class="center">{{ key.cleared|yesno:"Yes,No" }}</td>
+						<td class="right">€{{ key.amount }}</td>
+						<td class="right">€{{ total }}</td>
+						<td class="center">
+							<button type="button" class="btn btn-warning"><a href="{% url 'updateTransaction' key.id %}">Edit</a></button>
+						</td>
+				</tr>
+				{% endfor %}
+			</table>
+<!--add buttons to update and delete account-->
+			<br><br>
+			<div class="text-center">
+				<button type="button" class="btn btn-warning"><a href="{% url 'updateAccount' account.pk %}">Update Account</a></button>
+				<button type="button" class="btn btn-danger"><a href="{% url 'deleteAccount' account.pk %}">Delete Account</a></button>
+			</div>
+{% endblock %}
+

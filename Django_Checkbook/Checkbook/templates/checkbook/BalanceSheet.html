@@ -1,7 +1,8 @@
 {% extends 'checkbook_base.html' %}
 {% block title %}Balance Sheet{% endblock %}
 {% block content %}
-			<div id="all-transactions-form">
+
+<div id="all-transactions-form">
 				<form> 
 					<br>
 					<!-- Use value to add the Django populated details-->
@@ -9,47 +10,93 @@
 					<input id="accountholder" type="text" name="accountHolder" value="{{ account }}" readonly>
 					<br><br>
 					<label>Current Balance:</label>
-					<input id="balance" type="text" name="currentBalance" value="{{ balance }}" readonly>
+					<input id="balance" type="text" name="currentBalance" value="€{{ balance }}" readonly>
 				</form>
 			</div>
-			<br>
-			<div id="button-container" class="text-center">
-				<button type="button" class="btn btn-primary"><a href="{% url 'transaction' %}">Add Transaction</a></button>
-				<button type="button" class="btn btn-warning"><a href="{% url 'updateAccount' account.pk %}">Update Account</a></button>
-				<button type="button" class="btn btn-danger"><a href="{% url 'deleteAccount' account.pk %}">Delete Account</a></button>
-			</div>
-			<br><br>
-			
-			<h2>RECENT TRANSACTIONS</h2>
+<p class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} transactions</p>
 
-			<table class="table table-responsive" id ="transactions-table"> 
-				<!-- Replace this with the Django populated transactions -->
-				<tr id="headerRow">
-					<th>Date</th>
-					<th>Type</th>
-					<th>To/From</th>
-					<th>Description</th>
-					<th>Cleared</th>
-					<th>Amount</th>
-					<th>Balance</th>
-					<th>Actions</th> 
-				</tr>
-			
-				{% for key, total in table_contents.items %}
-				<tr>
-						<td class="center">{{ key.date|date:"m/d/Y"|default:"No Date" }}</td>
-						<td class="center">{{ key.type }}</td>
-						<td class="center">{{ key.to_from }}</td>
-						<td class="left">{{ key.description }}</td>
-						<td class="center">{{ key.cleared|yesno:"Yes,No" }}</td>
-						<td class="right">{{ key.amount }}</td>
-						<td class="right">{{ total }}</td>
-						<td class="center">
-							<button type="button" class="btn btn-warning"><a href="{% url 'updateTransaction' key.id %}">Edit</a></button>
-						</td>
-				</tr>
-				{% endfor %}
-			</table>
-			
+<div id="button-container" class="text-center">
+    <button type="button" class="btn btn-primary"><a href="{% url 'transaction' %}">Add Transaction</a></button>
+	<button type="button" class="btn btn-warning"><a href="{% url 'updateAccount' account.pk %}">Update Account</a></button>
+	<button type="button" class="btn btn-secondary"><a href="{% url 'index' %}">Back to Home</a></button>
+</div>
+<!-- Transaction table -->
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>To/From</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Balance</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaction, balance in table_contents.items %}
+        <tr>
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.type }}</td>
+            <td>{{ transaction.to_from }}</td>
+            <td>${{ transaction.amount }}</td>
+            <td>{{ transaction.description }}</td>
+            <td>${{ balance }}</td>
+            <td>
+                <a href="{% url 'updateTransaction' transaction.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                <a href="{% url 'deleteTransaction' transaction.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="text-center">No transactions found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+<nav aria-label="Transaction pagination">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo; First</span>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Last &raquo;</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
 {% endblock %}
 

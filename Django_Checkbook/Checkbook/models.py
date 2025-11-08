@@ -24,3 +24,8 @@ class Transaction(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     Transactions = models.Manager()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['account', '-date']),  # Optimize the filter + order_by
+        ]
