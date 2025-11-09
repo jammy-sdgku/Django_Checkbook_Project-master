@@ -25,10 +25,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-eqlnxbv)(@u+bdt8j9gd3ixpi#mk+$sde33$of&5i+1hl86xq5'
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+if not SECRET_KEY:
+    if DEBUG := os.getenv('DEBUG', 'False').lower() == 'true':
+        SECRET_KEY = 'django-insecure-development-only-key'
+    else:
+        raise ValueError("SECRET_KEY environment variable must be set in production!")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = ['.elasticbeanstalk.com', 'localhost', '127.0.0.1']
 
