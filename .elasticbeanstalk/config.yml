@@ -1,0 +1,5 @@
+branch-defaults:
+  main:
+    environment: Checkbook-env-1
+global:
+  profile: null
