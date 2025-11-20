@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Account, Transaction
 from .forms import AccountForm, TransactionForm
 from decimal import Decimal, InvalidOperation
 import logging
 from django.core.paginator import Paginator
 
+@login_required
 def home(request):
     form = TransactionForm(data=request.POST or None)
     if request.method == 'POST':
@@ -18,6 +20,7 @@ def home(request):
     return render(request, 'checkbook/index.html', content)
 
 
+@login_required
 def create_account(request):
     form = AccountForm(data=request.POST or None)
     if request.method == 'POST':
@@ -28,7 +31,8 @@ def create_account(request):
     return render(request, 'checkbook/CreateNewAccount.html', content)
 
 
-def balance(request, pk):
+@login_required
+def balance_sheet(request, pk):
     account = get_object_or_404(Account, pk=pk)
     
     # Get all transactions ordered by date (oldest first for correct balance calculation)
@@ -74,6 +78,7 @@ def balance(request, pk):
     }
     return render(request, 'checkbook/BalanceSheet.html', content)
 
+@login_required
 def balance2(request, pk):
     account = get_object_or_404(Account, pk=pk)
     
@@ -120,7 +125,8 @@ def balance2(request, pk):
     }
     return render(request, 'checkbook/BalanceSheet2.html', content)
 
-def transaction(request):
+@login_required
+def add_transaction(request):
     form = TransactionForm(data=request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
@@ -137,6 +143,7 @@ def transaction(request):
     content = {'form': form}
     return render(request, 'checkbook/AddTransaction.html', content)
 
+@login_required
 def update_transaction(request, pk):
     transaction = get_object_or_404(Transaction.Transactions.select_related('account'), pk=pk) 
     form = TransactionForm(data=request.POST or None, instance=transaction)
@@ -156,6 +163,7 @@ def update_transaction(request, pk):
     content = {'form': form}
     return render(request, 'checkbook/UpdateTransaction.html', content) 
 
+@login_required
 def delete_transaction(request, pk):
     transaction = get_object_or_404(Transaction.Transactions.select_related('account'), pk=pk)
     if request.method == 'POST':
@@ -169,6 +177,7 @@ def delete_transaction(request, pk):
     content = {'transaction': transaction}
     return render(request, 'checkbook/deleteTransaction.html', content)
 
+@login_required
 def update_account(request, pk):
     account = get_object_or_404(Account, pk=pk)
     form = AccountForm(data=request.POST or None, instance=account)
@@ -179,6 +188,7 @@ def update_account(request, pk):
     content = {'form': form}
     return render(request, 'account/UpdateAccount.html', content)
 
+@login_required
 def delete_account(request, pk):
     account = get_object_or_404(Account, pk=pk)
     if request.method == 'POST':

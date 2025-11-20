@@ -4,37 +4,33 @@
 
 <html lang="en">
 
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="{% static 'CSS/CheckbookApp.css' %}">
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-		<title>{% block title%}{% endblock %}</title>
-	</head>
-	<header>
-		<div class="JavaScriptDropdown">
-			<div class="btn-group">
-				<button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">Menu</button>
-				<div class="dropdown-menu"><!-- Add in links based on your registered URLs -->
-					<a href="{% url 'index' %}" class="dropdown-item">Home</a>
-					<a href="{% url 'create' %}" class="dropdown-item">Create New Account</a>
-					<a href="{% url 'transaction' %}" class="dropdown-item">Add New Transaction</a>
-				</div>
-			</div>
-		</div>
-	</header>
-	<body id="body">
-		<div class="checkbook-container">
-			{% block content %}{% endblock %}
-			<br><br>
-		</div>
-		<section id="block-footer">
-			<p id="footer-right"><a href="#">Terms</a>|<a href="#">Privacy</a></p>
-			<p id="footer-left">&copy;2025 - JJIT Professional Consulting</p>
-		</section>
-	</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Django Checkbook{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'CSS/CheckbookApp.css' %}">
+    </head>
+
+    <body>
+        <header>
+            <div class="header-content">
+                <h1>James' Django Checkbook</h1>
+                {% if user.is_authenticated %}
+                    <div class="user-info">
+                        <span>Welcome, {{ user.username }}!</span>
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-logout">Logout</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </header>
+        
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </body>
+
 </html>

@@ -148,6 +148,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'     # target for collectstatic
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Authentication settings
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
 # Debug Toolbar settings
 INTERNAL_IPS = [
     '127.0.0.1',
