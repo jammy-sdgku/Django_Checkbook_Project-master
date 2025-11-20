@@ -1,0 +1,19 @@
+{% extends 'checkbook_base.html' %}
+{% block title %}Delete Transaction{% endblock %}
+{% block content %}
+            <div id="delete-transaction-form">
+                <form method="POST"> 
+                    <br>
+                    {% csrf_token %}
+                    <p>Are you sure you want to delete this transaction?</p>
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                     
+                    {# Cancel: go back to the account's transactions (BalanceSheet) #}
+                    {% if form.instance.account and form.instance.account.pk %}
+                        <a class="btn btn-secondary" href="{% url 'balance' form.instance.account.pk %}">Cancel</a>
+                    {% else %}
+                        <a class="btn btn-secondary" href="{% url 'account_list' %}">Cancel</a>
+                    {% endif %}
+                </form>
+            </div>
+{% endblock content %}

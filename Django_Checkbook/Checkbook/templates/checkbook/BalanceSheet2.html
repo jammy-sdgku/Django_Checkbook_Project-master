@@ -1,0 +1,118 @@
+{% extends 'checkbook_base.html' %}
+{% block title %}Balance Sheet{% endblock %}
+{% block content %}
+
+<div id="all-transactions-form">
+				<form> 
+					<br>
+					<!-- Use value to add the Django populated details-->
+					<label>Account:</label>
+					<input id="accountholder" type="text" name="accountHolder" value="{{ account }}" readonly>
+					<br><br>
+					<label>Current Balance:</label>
+					<input id="balance" type="text" name="currentBalance" value="€{{ balance }}" readonly>
+                    <p class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} transactions</p>
+				</form>
+			</div>
+            
+<!-- Action Buttons -->
+<div id="button-container" class="text-center">
+    <button type="button" class="btn btn-primary"><a href="{% url 'transaction' %}">Add Transaction</a></button>
+	<button type="button" class="btn btn-warning"><a href="{% url 'updateAccount' account.pk %}">Update Account</a></button>
+	<button type="button" class="btn btn-secondary"><a href="{% url 'index' %}">Back to Home</a></button>
+</div>
+<!-- Transaction table -->
+<table class="table table-responsive table-striped" id ="transactions-table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>To/From</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Cleared</th>
+            <th>Balance</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaction, balance in table_contents %}
+        <tr>
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.type }}</td>
+            <td>{{ transaction.to_from }}</td>
+            <td>€{{ transaction.amount }}</td>
+            <td>{{ transaction.description }}</td>
+             <td class="cleared-col">
+                {% if transaction.cleared %}
+                    <!-- black checkmark -->
+                    <svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                        <rect width="16" height="16" fill="white" stroke="black" rx="3"></rect>
+                        <path d="M4.5 8.5 L7 11 L12 5.5" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                {% else %}
+                    <!-- empty box -->
+                    <svg width="20" height="20" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                        <rect width="16" height="16" fill="white" stroke="black" rx="3"></rect>
+                    </svg>
+                {% endif %}
+            </td>
+            <td>€{{ balance }}</td>
+            <td>
+                <a href="{% url 'updateTransaction' transaction.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                <a href="{% url 'deleteTransaction' transaction.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="text-center">No transactions found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+<nav aria-label="Transaction pagination">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo; First</span>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Last &raquo;</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+{% endblock %}
+
