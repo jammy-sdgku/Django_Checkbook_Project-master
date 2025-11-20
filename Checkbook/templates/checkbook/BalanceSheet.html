@@ -41,7 +41,9 @@
             <td>{{ transaction.date }}</td>
             <td>{{ transaction.type }}</td>
             <td>{{ transaction.to_from }}</td>
-            <td>${{ transaction.amount }}</td>
+            <td class="{% if transaction.type == 'Deposit' %}text-success{% else %}text-danger{% endif %}">
+                ${{ transaction.amount }}
+            </td>
             <td>{{ transaction.description }}</td>
             <td class="cleared-col">
                 {% if transaction.cleared %}
@@ -57,7 +59,9 @@
                     </svg>
                 {% endif %}
             </td>
-            <td>${{ balance }}</td>
+            <td class="{% if balance < 0 %}text-danger{% else %}text-success{% endif %}">
+                ${{ balance }}
+            </td>
             <td>
                 <a href="{% url 'updateTransaction' transaction.pk %}" class="btn btn-sm btn-primary">Edit</a>
                 <a href="{% url 'deleteTransaction' transaction.pk %}" class="btn btn-sm btn-danger">Delete</a>
