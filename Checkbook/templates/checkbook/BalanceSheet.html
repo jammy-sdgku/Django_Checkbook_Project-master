@@ -2,6 +2,13 @@
 {% block title %}Balance Sheet{% endblock %}
 {% block content %}
 
+<style>
+    .pagination {
+        list-style-type: none;
+        padding-left: 0;
+    }
+</style>
+
 <div id="all-transactions-form">
 				<form> 
 					<br>
@@ -10,16 +17,16 @@
 					<input id="accountholder" type="text" name="accountHolder" value="{{ account }}" readonly>
 					<br><br>
 					<label>Current Balance:</label>
-					<input id="balance" type="text" name="currentBalance" value="€{{ balance }}" readonly>
+					<input id="balance" type="text" name="currentBalance" value="${{ balance }}" readonly>
                     <p class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} transactions</p>
                 </form>
 			</div>
             
 <!-- Action Buttons -->
 <div id="button-container" class="text-center">
-    <button type="button" class="btn btn-primary"><a href="{% url 'transaction' %}">Add Transaction</a></button>
-	<button type="button" class="btn btn-warning"><a href="{% url 'updateAccount' account.pk %}">Update Account</a></button>
-	<button type="button" class="btn btn-secondary"><a href="{% url 'index' %}">Back to Home</a></button>
+    <button type="button" class="btn btn-primary"><a href="{% url 'AddTransaction' account.pk %}">Add Transaction</a></button>
+	<button type="button" class="btn btn-secondary"><a href="{% url 'updateAccount' account.pk %}">Update Account</a></button>
+	<button type="button" class="btn btn-warning"><a href="{% url 'index' %}">Back to Home</a></button>
 </div>
 <!-- Transaction table -->
 <table class="table table-responsive table-striped" id ="transactions-table">

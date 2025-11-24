@@ -247,6 +247,25 @@ button a:hover {
 	color: black;
 }
 
+.btn.btn-danger,
+.btn.btn-danger a {
+	color: red;
+}
+
+.btn.btn-primary,
+.btn.btn-primary a {
+	color: green;
+}
+
+.btn.btn-secondary,
+.btn.btn-secondary a {
+	color: orange;
+}
+
+.btn_create a {
+	color: blue;
+}
+
 .form-check-input {
 	width: 20px;
 	height: 20px;

@@ -2,13 +2,13 @@
 {% block title %}Update Account{% endblock %}
 {% block content %}
 <h2>Update Account</h2>
-<form method="post">
+<div class="update_buttons">
+
+    </div><form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-danger">Update</button>
-</form>
-<div class="update_buttons">
-    
-    <a class="btn btn-secondary" href="{% url 'index' %}">Cancel</a>
-    </div>
+    <button type="button" class="btn btn-secondary" onclick="window.location.href='{% url 'balance' account.pk %}'">Cancel</button>
+    </form> 
+</div>
 {% endblock %}

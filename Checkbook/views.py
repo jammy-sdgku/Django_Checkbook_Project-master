@@ -12,7 +12,7 @@ def home(request):
     if request.method == 'POST':
         pk = request.POST['account']
         # Redirect instead of calling the view directly
-        if pk == '17':
+        if pk == '2':
             return redirect('balance2', pk=pk)
         else:
             return redirect('balance', pk=pk)
@@ -126,41 +126,42 @@ def balance2(request, pk):
     return render(request, 'checkbook/BalanceSheet2.html', content)
 
 @login_required
-def add_transaction(request):
-    form = TransactionForm(data=request.POST or None)
+def add_transaction(request, account_pk):
+    account = get_object_or_404(Account, pk=account_pk)
     if request.method == 'POST':
+        form = TransactionForm(request.POST)
         if form.is_valid():
-            tx = form.save()
-            print(f"Saved transaction date: {tx.date}")
-            # determine account pk robustly (use tx.account_id if available)
-            pk = getattr(tx, 'account_id', None) or request.POST.get('account')
-            # redirect to the euro view for account 17, otherwise regular balance
-            if str(pk) == '17':
-                return redirect('balance2', pk=pk)
-            return redirect('balance', pk=pk)
-        else:
-            print(f"Form errors: {form.errors}")
-    content = {'form': form}
-    return render(request, 'checkbook/AddTransaction.html', content)
+            tx = form.save(commit=False)
+            tx.account = account
+            tx.save()
+            # Redirect to euro view for account 2, otherwise regular balance
+            if str(account.pk) == '2':
+                return redirect('balance2', pk=account.pk)
+            return redirect('balance', pk=account.pk)
+    else:
+        form = TransactionForm(initial={'account': account})
+    return render(request, 'checkbook/AddTransaction.html', {'form': form, 'account': account})
 
 @login_required
 def update_transaction(request, pk):
-    transaction = get_object_or_404(Transaction.Transactions.select_related('account'), pk=pk) 
+    transaction = get_object_or_404(Transaction.Transactions.select_related('account'), pk=pk)
+    account = transaction.account  # Always get the related account
     form = TransactionForm(data=request.POST or None, instance=transaction)
     if request.method == 'POST':
         if form.is_valid():
             updated = form.save()
-            # determine the account pk after save (account may have been changed)
             account_pk = getattr(updated, 'account_id', None) or (updated.account.pk if getattr(updated, 'account', None) else None)
-            # Redirect to the euro view for account 17, otherwise regular balance
-            if str(account_pk) == '17':
+            if str(account_pk) == '2':
                 return redirect('balance2', pk=account_pk)
             return redirect('balance', pk=account_pk)
     else:
         form = TransactionForm(instance=transaction)
         print(f"Form date field value: {form['date'].value()}")
         print(f"Form initial data: {form.initial}")
-    content = {'form': form}
+    content = {
+        'form': form,
+        'account': account  # Pass account to template for Cancel button
+    }
     return render(request, 'checkbook/UpdateTransaction.html', content) 
 
 @login_required
@@ -170,8 +171,8 @@ def delete_transaction(request, pk):
         # determine account pk robustly
         pk_account = getattr(transaction, 'account_id', None) or (transaction.account.pk if getattr(transaction, 'account', None) else None)
         transaction.delete()
-        # redirect to euro view for account 17, otherwise regular balance
-        if str(pk_account) == '17':
+        # redirect to euro view for account 2, otherwise regular balance
+        if str(pk_account) == '2':
             return redirect('balance2', pk=pk_account)
         return redirect('balance', pk=pk_account)
     content = {'transaction': transaction}
@@ -184,9 +185,9 @@ def update_account(request, pk):
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-            return redirect('index')
+            return redirect('balance', pk=account.pk)
     content = {'form': form}
-    return render(request, 'account/UpdateAccount.html', content)
+    return render(request, 'account/UpdateAccount.html', {'form': form, 'account': account})
 
 @login_required
 def delete_account(request, pk):

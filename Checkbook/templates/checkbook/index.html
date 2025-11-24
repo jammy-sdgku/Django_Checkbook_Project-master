@@ -5,7 +5,7 @@
     <h3>Welcome to JJIT Banking System</h3>
     <hr>
     <div class="text-center">
-        <h5>Manage your existing account!</h5>
+        <h5>Manage your existing accounts!</h5>
         <!-- Replace the <input> with a Django form including a dropdown list of accounts-->
         <form method="POST">
             <label id="index-label">Choose Account:</label>
@@ -18,6 +18,6 @@
     <div class="text-center">
         <h5>Add another account!</h5>
         <!-- Add a template to the href so the button works-->
-        <a class="btn btn-primary" href="{% url 'create' %}">Create Account</a>
+        <button type="submit" class="btn_create"><a href="{% url 'create' %}">Create Account</a></button>
     </div>
 {% endblock %}

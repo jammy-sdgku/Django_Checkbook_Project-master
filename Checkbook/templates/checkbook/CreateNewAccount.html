@@ -7,6 +7,7 @@
 			{% csrf_token %}
 			{{form.as_p}}
 			<button class="btn btn-primary" id="new-account-button" type="submit" name="Save_Account">Create Account</button>
+			<button class="btn btn-secondary" id="cancel-button" type="button" onclick="window.location.href='{% url 'index' %}'">Cancel</button>
 		</form>
 		<br>
 	</div>
