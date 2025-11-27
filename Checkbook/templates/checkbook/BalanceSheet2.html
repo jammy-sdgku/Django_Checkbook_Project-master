@@ -10,17 +10,17 @@
 </style>
 
 <div id="all-transactions-form">
-				<form> 
-					<br>
-					<!-- Use value to add the Django populated details-->
-					<label>Account:</label>
-					<input id="accountholder" type="text" name="accountHolder" value="{{ account }}" readonly>
-					<br><br>
-					<label>Current Balance:</label>
-					<input id="balance" type="text" name="currentBalance" value="€{{ balance }}" readonly>
-                    <p class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} transactions</p>
-				</form>
-			</div>
+    <form> 
+        <br>
+        <!-- Use value to add the Django populated details-->
+        <label>Account:</label>
+        <input id="accountholder" type="text" name="accountHolder" value="{{ account }}" readonly>
+        <br><br>
+        <label>Current Balance:</label>
+        <input id="balance" type="text" name="currentBalance" value="€{{ balance }}" readonly>
+        <p class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} transactions</p>
+    </form>
+</div>
             
 <!-- Action Buttons -->
 <div id="button-container" class="text-center">
