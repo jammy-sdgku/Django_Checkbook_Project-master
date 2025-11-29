@@ -1,11 +1,12 @@
 {% extends "checkbook_base.html" %}
 
 {% block title %}JJIT Banking System{% endblock %}
+
 {% block content %}
-    <h3 id="h3_main">Welcome to JJIT Banking System</h3>
+    <h2 id="h2_main">Welcome to JJIT Banking System</h2>
     <hr>
     <div class="text-center">
-        <h5>Manage your existing accounts!</h5>
+        <h3>Manage your existing accounts!</h3>
         <!-- Replace the <input> with a Django form including a dropdown list of accounts-->
         <form method="POST">
             <label id="index-label">Choose Account:</label>
@@ -16,9 +17,10 @@
     </div>
     <hr>
     <div class="text-center">
-        <h5>Add another account!</h5>
+        <h4>Add another account!</h4>
         <!-- Add a template to the href so the button works-->
         <button type="submit" class="btn_create"><a href="{% url 'create' %}">Create Account</a></button>
+        <h4>View your account reports!</h4>
         <button type="submit" class="btn_reports"><a href="{% url 'reports' %}">View Reports</a></button>
     </div>
 {% endblock %}
