@@ -1,0 +1,52 @@
+{% extends "checkbook_base.html" %}
+
+{% block title %}JJIT Banking System Reports{% endblock %}
+{% block content %}
+    <h3>Welcome to JJIT Banking System Reporting</h3>
+    <button type="button" class="btn btn-warning"><a href="{% url 'index' %}">Back to Home</a></button>
+    <hr>
+    <div class="report-center" id="charts-container">
+        {# Chart canvases will be injected by JavaScript #}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const chartData = JSON.parse('{{ chart_data|escapejs }}');
+        const colors = [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(255, 159, 64, 0.7)',
+            'rgba(199, 199, 199, 0.7)',
+            'rgba(83, 102, 255, 0.7)',
+            'rgba(255, 99, 71, 0.7)',
+            'rgba(60, 179, 113, 0.7)'
+        ];
+        const container = document.getElementById('charts-container');
+        chartData.forEach((account, idx) => {
+            // Create chart container
+            const div = document.createElement('div');
+            div.style.marginBottom = '40px';
+            div.innerHTML = `<h4>${account.account}</h4><canvas id="chart-${idx + 1}"></canvas>`;
+            container.appendChild(div);
+
+            // Prepare chart data
+            const labels = account.data.map(item => item.description);
+            const data = account.data.map(item => Math.abs(item.total));
+            const backgroundColors = labels.map((_, i) => colors[i % colors.length]);
+            const ctx = document.getElementById(`chart-${idx + 1}`).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `Expenditures for ${account.account} (last 30 days)`,
+                        data: data,
+                        backgroundColor: backgroundColors
+                    }]
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -5,6 +5,9 @@ from .forms import AccountForm, TransactionForm
 from decimal import Decimal, InvalidOperation
 import logging
 from django.core.paginator import Paginator
+from django.utils import timezone
+from django.db.models import Sum
+import json
 
 @login_required
 def home(request):
@@ -197,3 +200,32 @@ def delete_account(request, pk):
         return redirect('index')
     content = {'account': account}
     return render(request, 'account/DeleteAccount.html', content)
+
+@login_required
+def reports(request):
+    thirty_days_ago = timezone.now() - timezone.timedelta(days=30)
+    accounts = Account.Accounts.all()
+    chart_data = []
+
+    for account in accounts:
+        expenditures = (
+            Transaction.Transactions
+            .filter(account=account, type='Withdrawal', date__gte=thirty_days_ago)
+            .values('description')
+            .annotate(total=Sum('amount'))
+        )
+        # Convert Decimal totals to float for JSON serialization
+        expenditures_list = []
+        for exp in expenditures:
+            exp_copy = exp.copy()
+            if isinstance(exp_copy['total'], Decimal):
+                exp_copy['total'] = float(exp_copy['total'])
+            expenditures_list.append(exp_copy)
+        chart_data.append({
+            'account': account.name,
+            'data': expenditures_list
+        })
+
+    return render(request, 'checkbook/Reports.html', {
+        'chart_data': json.dumps(chart_data)
+        })

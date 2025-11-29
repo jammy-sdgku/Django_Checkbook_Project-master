@@ -2,7 +2,7 @@
 
 {% block title %}JJIT Banking System{% endblock %}
 {% block content %}
-    <h3>Welcome to JJIT Banking System</h3>
+    <h3 id="h3_main">Welcome to JJIT Banking System</h3>
     <hr>
     <div class="text-center">
         <h5>Manage your existing accounts!</h5>
@@ -19,5 +19,6 @@
         <h5>Add another account!</h5>
         <!-- Add a template to the href so the button works-->
         <button type="submit" class="btn_create"><a href="{% url 'create' %}">Create Account</a></button>
+        <button type="submit" class="btn_reports"><a href="{% url 'reports' %}">View Reports</a></button>
     </div>
 {% endblock %}
