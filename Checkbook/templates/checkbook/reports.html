@@ -31,8 +31,8 @@
             div.innerHTML = `<h4>${account.account}</h4><canvas id="chart-${idx + 1}"></canvas>`;
             container.appendChild(div);
 
-            // Prepare chart data
-            const labels = account.data.map(item => item.description);
+             // Prepare chart data
+            const labels = account.data.map(item => item.category);
             const data = account.data.map(item => Math.abs(item.total));
             const backgroundColors = labels.map((_, i) => colors[i % colors.length]);
             const ctx = document.getElementById(`chart-${idx + 1}`).getContext('2d');
