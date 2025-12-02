@@ -211,16 +211,15 @@ def reports(request):
         expenditures = (
             Transaction.Transactions
             .filter(account=account, type='Withdrawal', date__gte=thirty_days_ago)
-            .values('category__name')  # Use category name instead of ID
+            .values('description')
             .annotate(total=Sum('amount'))
         )
+        # Convert Decimal totals to float for JSON serialization
         expenditures_list = []
         for exp in expenditures:
             exp_copy = exp.copy()
             if isinstance(exp_copy['total'], Decimal):
                 exp_copy['total'] = float(exp_copy['total'])
-            # Rename 'category__name' to 'category' for chart compatibility
-            exp_copy['category'] = exp_copy.pop('category__name')
             expenditures_list.append(exp_copy)
         chart_data.append({
             'account': account.name,
@@ -229,4 +228,4 @@ def reports(request):
 
     return render(request, 'checkbook/Reports.html', {
         'chart_data': json.dumps(chart_data)
-    })
+        })

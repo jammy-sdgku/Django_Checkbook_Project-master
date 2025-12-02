@@ -36,6 +36,7 @@
             <th>Type</th>
             <th>To/From</th>
             <th>Amount</th>
+            <th>Category</th>
             <th>Description</th>
             <th class="cleared-col">Cleared</th>
             <th>Balance</th>
@@ -51,6 +52,7 @@
             <td class="{% if transaction.type == 'Deposit' %}text-success{% else %}text-danger{% endif %}">
                 ${{ transaction.amount }}
             </td>
+            <td>{{ transaction.category }}</td>
             <td>{{ transaction.description }}</td>
             <td class="cleared-col">
                 {% if transaction.cleared %}
