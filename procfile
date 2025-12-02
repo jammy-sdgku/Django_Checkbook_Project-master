@@ -1,0 +1,1 @@
+web: gunicorn Django_Checkbook_Project.wsgi:application
