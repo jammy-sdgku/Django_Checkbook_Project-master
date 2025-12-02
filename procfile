@@ -1,1 +1,1 @@
-web: gunicorn Django_Checkbook.wsgi:application
+web: gunicorn Django_Checkbook.wsgi
