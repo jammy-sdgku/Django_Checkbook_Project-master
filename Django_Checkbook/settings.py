@@ -141,7 +141,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')   # target for collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # Change from 'staticfiles' to 'static'
+
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]   # add project-level static folder
 
 
