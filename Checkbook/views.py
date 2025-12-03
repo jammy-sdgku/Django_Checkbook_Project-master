@@ -15,7 +15,7 @@ def home(request):
     if request.method == 'POST':
         pk = request.POST['account']
         # Redirect instead of calling the view directly
-        if pk == '2':
+        if pk == '17':
             return redirect('balance2', pk=pk)
         else:
             return redirect('balance', pk=pk)
