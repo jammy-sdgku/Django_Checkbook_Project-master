@@ -190,7 +190,7 @@ def update_account(request, pk):
             form.save()
             return redirect('balance', pk=account.pk)
     content = {'form': form}
-    return render(request, 'account/UpdateAccount.html', {'form': form, 'account': account})
+    return render(request, 'account/UpdateAccount.html', {'form': form, 'account': account}) #updated case sesitive objects.
 
 @login_required
 def delete_account(request, pk):
