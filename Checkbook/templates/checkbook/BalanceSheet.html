@@ -47,7 +47,8 @@
         {% for transaction, balance in table_contents %}
         <tr>
             <td>{{ transaction.date }}</td>
-            <td>{{ transaction.type }}</td>
+            <td class="{% if transaction.type == 'Deposit' %}text-success{% else %}text-danger{% endif %}">
+                {{ transaction.type }}</td>
             <td>{{ transaction.to_from }}</td>
             <td class="{% if transaction.type == 'Deposit' %}text-success{% else %}text-danger{% endif %}">
                 ${{ transaction.amount }}
