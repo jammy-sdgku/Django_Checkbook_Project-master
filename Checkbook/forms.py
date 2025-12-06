@@ -23,6 +23,9 @@ class TransactionForm(ModelForm):
     class Meta:
         model = Transaction
         fields = '__all__'
+        labels = {
+            'to_from': 'To / From',
+        }
         widgets = {
             'type': forms.Select(attrs={'class': 'form-control'}),
             'to_from': forms.TextInput(attrs={'class': 'form-control'}),
