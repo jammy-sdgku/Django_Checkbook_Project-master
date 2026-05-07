@@ -137,8 +137,8 @@ def add_transaction(request, account_pk):
             tx = form.save(commit=False)
             tx.account = account
             tx.save()
-            # Redirect to euro view for account 2, otherwise regular balance
-            if str(account.pk) == '2':
+            # Redirect to euro view for account 17, otherwise regular balance
+            if str(account.pk) == '17':
                 return redirect('balance2', pk=account.pk)
             return redirect('balance', pk=account.pk)
     else:
@@ -154,7 +154,7 @@ def update_transaction(request, pk):
         if form.is_valid():
             updated = form.save()
             account_pk = getattr(updated, 'account_id', None) or (updated.account.pk if getattr(updated, 'account', None) else None)
-            if str(account_pk) == '2':
+            if str(account_pk) == '17':
                 return redirect('balance2', pk=account_pk)
             return redirect('balance', pk=account_pk)
     else:
@@ -174,8 +174,8 @@ def delete_transaction(request, pk):
         # determine account pk robustly
         pk_account = getattr(transaction, 'account_id', None) or (transaction.account.pk if getattr(transaction, 'account', None) else None)
         transaction.delete()
-        # redirect to euro view for account 2, otherwise regular balance
-        if str(pk_account) == '2':
+        # redirect to euro view for account 17, otherwise regular balance
+        if str(pk_account) == '17':
             return redirect('balance2', pk=pk_account)
         return redirect('balance', pk=pk_account)
     content = {'transaction': transaction}
@@ -188,6 +188,8 @@ def update_account(request, pk):
     if request.method == 'POST':
         if form.is_valid():
             form.save()
+            if str(account.pk) == '17':
+                return redirect('balance2', pk=account.pk)
             return redirect('balance', pk=account.pk)
     content = {'form': form}
     return render(request, 'account/UpdateAccount.html', {'form': form, 'account': account}) #updated case sesitive objects.

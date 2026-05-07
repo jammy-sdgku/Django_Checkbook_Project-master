@@ -6,7 +6,7 @@
             {% csrf_token %}
             {{ form.as_p }}
             <button class="btn btn-primary" id="new-transaction-button" type="submit" name="Save_Transaction">Add Transaction</button>
-            <button type="button" class="btn btn-secondary" onclick="window.location.href='{% url 'balance' account.pk %}'">Cancel</button>
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='{% if account.pk == 17 %}{% url 'balance2' account.pk %}{% else %}{% url 'balance' account.pk %}{% endif %}'">Cancel</button>
         </form>
         <br>
     </div>
